@@ -13,7 +13,6 @@ def main():
     brewing = "brewing_0001"
     tank_id = "B002"
 
-measured_quantities = ("level", "temperature", "timestamp")
 
 
 

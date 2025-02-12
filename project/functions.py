@@ -44,7 +44,43 @@ def read_metadata(file: str, path: str, attr_key: str) -> Any | None:
 
 
 def read_data(file: str, path: str) -> NDArray | None:
-    pass
+    """
+        Reads a dataset from an HDF5 file and returns it as a 1D numpy array.
+
+        Args:
+            file (str): Path to the HDF5 file
+            path (str): Path to the dataset within the HDF5 file
+
+        Returns:
+            NDArray | None: 1D numpy array if dataset exists, None otherwise
+
+        Issues warnings for:
+        - Non-existent paths
+        - Paths pointing to groups instead of datasets
+        """
+
+    import h5py
+    import warnings
+    try:
+
+      with h5py.File(file, 'r') as hdf_file:
+            # Check if the path exists and is a dataset
+            if path not in hdf_file:
+                warnings.warn(f"Path '{path}' not found in HDF5 file.", UserWarning)
+                return None
+
+            obj = hdf_file[path]
+            if not isinstance(obj, h5py.Dataset):
+                warnings.warn(f"Path '{path}' points to a group, not a dataset.", UserWarning)
+                return None
+
+            # Read dataset and ensure 1D shape
+            data = np.array(obj)
+            return data.squeeze()  # Remove singleton dimensions
+
+    except Exception as e:
+        warnings.warn(f"Error reading dataset '{path}': {str(e)}", UserWarning)
+        return None
 
 
 def check_equal_length(*arrays: NDArray) -> bool:

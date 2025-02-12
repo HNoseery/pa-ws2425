@@ -43,6 +43,8 @@ def main():
 
     specific_heat_capacity_tank = read_metadata(file_path,tank_group_path,"specific_heat_capacity_tank")
 
+    df_data = {}
+
 
 
 

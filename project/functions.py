@@ -84,7 +84,29 @@ def read_data(file: str, path: str) -> NDArray | None:
 
 
 def check_equal_length(*arrays: NDArray) -> bool:
-    pass
+    """
+       Checks if all input arrays have the same first dimension length.
+
+       Args:
+           *arrays (NDArray): Variable number of numpy arrays to compare
+
+       Returns:
+           bool: True if all arrays have the same length in their first dimension, False otherwise
+       """
+    if not arrays:
+        return True  # No arrays to compare
+
+    first_length = arrays[0].shape[0]
+
+    for arr in arrays[1:]:
+        try:
+            if arr.shape[0] != first_length:
+                return False
+        except IndexError:
+            # Handle 0D arrays or empty arrays
+            return False
+
+    return True
 
 
 def process_time_data(data: NDArray) -> NDArray:

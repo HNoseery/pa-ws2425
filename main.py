@@ -18,11 +18,31 @@ def main():
     brewing_group_path = "brewing_0001"
 
 
+
     T_env = read_metadata(file_path, brewing_group_path, "T_env")
 
     specific_heat_capacity_beer = read_metadata(file_path,brewing_group_path,"specific_heat_capacity_beer")
 
     density_beer = read_metadata(file_path,brewing_group_path,"density_beer")
+
+
+
+    tank_group_path = "brewing_0001/B002"
+
+    mass_tank = read_metadata(file_path,tank_group_path,"mass_tank")
+
+
+    surface_area_tank = read_metadata(file_path,tank_group_path,"surface_area_tank")
+
+
+    footprint_tank = read_metadata(file_path,tank_group_path,"footprint_tank")
+
+
+    heat_transfer_coeff_tank = read_metadata(file_path,tank_group_path,"heat_transfer_coeff_tank")
+
+
+    specific_heat_capacity_tank = read_metadata(file_path,tank_group_path,"specific_heat_capacity_tank")
+
 
 
 

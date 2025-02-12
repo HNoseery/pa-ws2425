@@ -15,6 +15,12 @@ def main():
 
     measured_quantities = ("level", "temperature", "timestamp")
 
+    raw_data = {}
+
+    for quantity in measured_quantities:
+        pass
+
+
     brewing_group_path = "brewing_0001"
 
 

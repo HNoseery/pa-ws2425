@@ -163,7 +163,30 @@ def remove_negatives(array: NDArray) -> NDArray:
 def linear_interpolation(
     time: NDArray, start_time: float, end_time: float, start_y: float, end_y: float
 ) -> NDArray:
-    pass
+    """
+        Perform linear interpolation between two points (start_time, start_y) and (end_time, end_y).
+
+        Args:
+            time: Array of time values where interpolation should be calculated
+            start_time: Time value at the start of the interval
+            end_time: Time value at the end of the interval
+            start_y: Y-value at start_time
+            end_y: Y-value at end_time
+
+        Returns:
+            NDArray: Interpolated values at each time point
+
+        Formula:
+            y = start_y + (end_y - start_y) * (time - start_time) / (end_time - start_time)
+        """
+
+    time_diff = end_time - start_time
+    ratio = (time - start_time) / time_diff
+
+
+    interpolated = start_y + (end_y - start_y) * ratio
+
+    return interpolated.astype(np.float64)
 
 
 def interpolate_nan_data(time: NDArray, y_data: NDArray) -> NDArray:

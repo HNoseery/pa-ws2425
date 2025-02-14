@@ -22,13 +22,14 @@ def main():
 
         dataset_path = f"{brewing}/{tank_id}/{quantity}"
 
-
         data = read_data(file_path,dataset_path)
 
 
         raw_data[quantity] = data
 
-
+    print("\nRaw Data Structure:")
+    for key, value in raw_data.items():
+        print(f"{key}:", "Data loaded" if value is not None else "No data")
 
 
 

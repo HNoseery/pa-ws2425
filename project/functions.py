@@ -29,9 +29,9 @@ def read_metadata(file: str, path: str, attr_key: str) -> Any | None:
        """
     try:
         with h5py.File(file, 'r') as hdf_file:
-            # Access the group or dataset
+
             target = hdf_file[path]
-            # Read the metadata attribute
+
             if attr_key in target.attrs:
                 return target.attrs[attr_key]
             else:
@@ -64,7 +64,7 @@ def read_data(file: str, path: str) -> NDArray | None:
 
 
       with h5py.File(file, 'r') as hdf_file:
-            # Check if the path exists and is a dataset
+
             if path not in hdf_file:
                 warnings.warn(f"Path '{path}' not found in HDF5 file.", UserWarning)
                 return None
@@ -74,7 +74,7 @@ def read_data(file: str, path: str) -> NDArray | None:
                 warnings.warn(f"Path '{path}' points to a group, not a dataset.", UserWarning)
                 return None
 
-            # Read dataset and ensure 1D shape
+
             data = np.array(obj)
             return data.squeeze()  # Remove singleton dimensions
 
@@ -94,7 +94,7 @@ def check_equal_length(*arrays: NDArray) -> bool:
            bool: True if all arrays have the same length in their first dimension, False otherwise
        """
     if not arrays:
-        return True  # No arrays to compare
+        return True
 
     first_length = arrays[0].shape[0]
 
@@ -103,7 +103,7 @@ def check_equal_length(*arrays: NDArray) -> bool:
             if arr.shape[0] != first_length:
                 return False
         except IndexError:
-            # Handle 0D arrays or empty arrays
+
             return False
 
     return True
@@ -127,15 +127,37 @@ def process_time_data(data: NDArray) -> NDArray:
            array([0., 1., 2.])
        """
     if data.size == 0:
-        return np.array([])  # Handle empty input
+        return np.array([])
 
-    # Calculate relative time in seconds
+
     relative_time = (data - data[0]) / 1000.0
     return relative_time.astype(np.float64)
 
 
 def remove_negatives(array: NDArray) -> NDArray:
-    pass
+    """
+       Replace all negative values in an array with NaN.
+
+       Args:
+           array: Input array containing numerical values
+
+       Returns:
+           NDArray: Processed array with negative values replaced by NaN
+
+       Example:
+           >>> remove_negatives(np.array([-1, 2, -3, 4]))
+           array([nan,  2., nan,  4.])
+       """
+    if array.size == 0:
+        return array
+
+
+    processed = array.copy().astype(np.float64)  # Ensure float type for NaN support
+
+
+    processed[processed < 0] = np.nan
+
+    return processed
 
 
 def linear_interpolation(

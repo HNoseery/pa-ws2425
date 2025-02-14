@@ -24,12 +24,29 @@ def main():
 
         data = read_data(file_path,dataset_path)
 
-
         raw_data[quantity] = data
+
+    for quantity, data in raw_data.items():
+        from project.functions import check_equal_length
+
+        if data is None:
+            raise ValueError(f"Failed to read dataset: {quantity}")
+
+        # Check if all datasets have equal length
+    if not check_equal_length(*raw_data.values()):
+
+        dataset_lengths = {k: len(v) for k, v in raw_data.items()}
+        raise ValueError(
+            f"Dataset length mismatch: {dataset_lengths}\n"
+            "All measurement datasets must have the same length."
+        )
 
     print("\nRaw Data Structure:")
     for key, value in raw_data.items():
         print(f"{key}:", "Data loaded" if value is not None else "No data")
+
+    print("\nData Validation Successful!")
+    print(f"All datasets have length: {len(next(iter(raw_data.values())))}")
 
 
 

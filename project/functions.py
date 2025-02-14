@@ -190,7 +190,65 @@ def linear_interpolation(
 
 
 def interpolate_nan_data(time: NDArray, y_data: NDArray) -> NDArray:
-    pass
+    from typing import Optional
+    """
+        Replace NaN values in y_data using linear interpolation between valid data points.
+
+        Args:
+            time: Array of time values corresponding to measurements
+            y_data: Array with measurement data containing NaNs
+
+        Returns:
+            NDArray: Processed array with NaNs replaced by interpolated values
+
+        Raises:
+            ValueError: If first/last value is NaN or unclosed gap exists
+        """
+
+    if np.isnan(y_data[0]) or np.isnan(y_data[-1]):
+        raise ValueError("First or last value in y_data is NaN")
+
+    interpolated_data = y_data.copy().astype(np.float64)  # Force float for NaN handling
+    active_gap = False
+    start_index: Optional[int] = None
+
+    for i in range(len(interpolated_data)):
+        current_val = interpolated_data[i]
+
+        if np.isnan(current_val):
+            if not active_gap:
+
+                start_index = i
+                active_gap = True
+        else:
+            if active_gap:
+
+                end_index = i
+
+
+                start_time = time[start_index - 1]
+                end_time = time[end_index]
+                start_y = interpolated_data[start_index - 1]
+                end_y = interpolated_data[end_index]
+
+
+                gap_time = time[start_index: end_index]
+
+
+                interpolated_values = linear_interpolation(
+                    gap_time, start_time, end_time, start_y, end_y
+                )
+
+
+                interpolated_data[start_index: end_index] = interpolated_values
+                active_gap = False
+                start_index = None
+
+
+    if active_gap:
+        raise ValueError("Unclosed gap detected - last value should be valid")
+
+    return interpolated_data
 
 
 def filter_data(data: NDArray, window_size: int) -> NDArray:

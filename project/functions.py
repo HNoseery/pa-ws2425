@@ -44,6 +44,8 @@ def read_metadata(file: str, path: str, attr_key: str) -> Any | None:
 
 
 def read_data(file: str, path: str) -> NDArray | None:
+    import h5py
+    import warnings
     """
         Reads a dataset from an HDF5 file and returns it as a 1D numpy array.
 
@@ -58,10 +60,8 @@ def read_data(file: str, path: str) -> NDArray | None:
         - Non-existent paths
         - Paths pointing to groups instead of datasets
         """
-
-    import h5py
-    import warnings
     try:
+
 
       with h5py.File(file, 'r') as hdf_file:
             # Check if the path exists and is a dataset
@@ -110,7 +110,28 @@ def check_equal_length(*arrays: NDArray) -> bool:
 
 
 def process_time_data(data: NDArray) -> NDArray:
-    pass
+    import numpy as np
+    from numpy.typing import NDArray
+
+    """
+       Convert millisecond-precision timestamps to seconds since first measurement.
+
+       Args:
+           data: Array of timestamps in milliseconds (typically UNIX epoch format)
+
+       Returns:
+           NDArray: Time values in seconds relative to first measurement
+
+       Example:
+           >>> process_time_data(np.array([1640995200000, 1640995201000, 1640995202000]))
+           array([0., 1., 2.])
+       """
+    if data.size == 0:
+        return np.array([])  # Handle empty input
+
+    # Calculate relative time in seconds
+    relative_time = (data - data[0]) / 1000.0
+    return relative_time.astype(np.float64)
 
 
 def remove_negatives(array: NDArray) -> NDArray:

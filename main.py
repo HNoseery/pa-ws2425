@@ -18,11 +18,21 @@ def main():
     raw_data = {}
 
     for quantity in measured_quantities:
-        pass
+        from project.functions import read_data
+
+        dataset_path = f"{brewing}/{tank_id}/{quantity}"
+
+
+        data = read_data(file_path,dataset_path)
+
+
+        raw_data[quantity] = data
+
+
+
 
 
     brewing_group_path = "brewing_0001"
-
 
 
     T_env = read_metadata(file_path, brewing_group_path, "T_env")

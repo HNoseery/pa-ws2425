@@ -294,7 +294,22 @@ def calc_heater_heat_flux(P_heater: float, eta_heater: float) -> float:
 def calc_convective_heat_flow(
     k_tank: float, area_tank: float, t_total: float, t_env: float
 ) -> float:
-    pass
+    """
+       Calculate convective heat loss from the tank to the environment.
+
+       Args:
+           k_tank (float): Heat transfer coefficient of the tank material [W/(m²·K)]
+           area_tank (float): Outer surface area of the tank [m²]
+           t_total (float): Current temperature of the tank (equals liquid temperature) [°C or K]
+           t_env (float): Environmental temperature [°C or K]
+
+       Returns:
+           float: Convective heat loss Q_ab [W]
+
+       Formula:
+           Q_ab = k_tank * area_tank * (t_total - t_env)
+       """
+    return k_tank * area_tank * (t_total - t_env)
 
 
 def calc_mass_flow(

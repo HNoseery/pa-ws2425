@@ -275,7 +275,20 @@ def filter_data(data: NDArray, window_size: int) -> NDArray:
 
 
 def calc_heater_heat_flux(P_heater: float, eta_heater: float) -> float:
-    pass
+    """
+       Calculate the effective heat flux from the heater accounting for efficiency.
+
+       Args:
+           P_heater: Nominal heater power [W]
+           eta_heater: Heater efficiency factor [0-1]
+
+       Returns:
+           Effective heat flux Q_zu [W]
+
+       Implements:
+           Q_zu = P_heater * eta_heater
+       """
+    return P_heater * eta_heater
 
 
 def calc_convective_heat_flow(

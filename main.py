@@ -80,6 +80,61 @@ def main():
     df_data = {}
 
 
+    from project.functions import process_time_data
+    from project.functions import remove_negatives
+    from project.functions import interpolate_nan_data
+    from project.functions import filter_data
+
+    processed_data = {}
+    df_data = {}
+
+
+    filter_sizes = (4, 29, 45, 201)
+
+
+    if 'timestamp' in raw_data and raw_data['timestamp'] is not None:
+        df_data['time'] = process_time_data(raw_data['timestamp'])
+    else:
+        raise ValueError("Timestamp data missing - cannot process time data")
+
+
+    for k in filter_sizes:
+
+        temp_key = f"temperature_k_{k}"
+        if 'temperature' in raw_data and raw_data['temperature'] is not None:
+            processed_data[temp_key] = filter_data(
+                data=raw_data['temperature'],
+                window_size=k
+            )
+
+
+        level_key = f"level_k_{k}"
+        if 'level' in raw_data and raw_data['level'] is not None:
+
+            cleaned_level = remove_negatives(raw_data['level'])
+
+
+            interpolated_level = interpolate_nan_data(
+                time=df_data['time'],
+                y_data=cleaned_level
+            )
+
+
+            processed_data[level_key] = filter_data(
+                data=interpolated_level,
+                window_size=k
+            )
+
+
+    print("\nProcessed Data Structure:")
+    for key in processed_data:
+        print(f"- {key}: {len(processed_data[key])} samples")
+
+    print("\nDF Data Structure:")
+    for key in df_data:
+        print(f"- {key}: {len(df_data[key])} samples")
+
+
 
 
 if __name__ == "__main__":

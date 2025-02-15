@@ -315,7 +315,21 @@ def calc_convective_heat_flow(
 def calc_mass_flow(
     level_data: NDArray, tank_footprint: float, density: float
 ) -> NDArray:
-    pass
+    """
+       Calculate beer mass in tank over time from fill level measurements.
+
+       Args:
+           level_data: Array of fill heights [m]
+           tank_footprint: Tank base area (A_b) [m²]
+           density: Beer density (ρ) [kg/m³]
+
+       Returns:
+           NDArray: Mass values [kg] at each time step
+
+       Formula:
+           m(t) = ρ * A_b * h(t)
+       """
+    return density * tank_footprint * level_data
 
 
 def calc_transported_power(

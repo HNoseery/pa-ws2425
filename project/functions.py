@@ -312,7 +312,7 @@ def calc_convective_heat_flow(
     return k_tank * area_tank * (t_total - t_env)
 
 
-def calc_mass_flow(
+def calc_mass(
     level_data: NDArray, tank_footprint: float, density: float
 ) -> NDArray:
     """
@@ -332,10 +332,24 @@ def calc_mass_flow(
     return density * tank_footprint * level_data
 
 
-def calc_transported_power(
-    mass_flow: float, specific_heat_capacity: float, temperature: float
+def calc_enthalpy(
+    mass: float, specific_heat_capacity: float, temperature: float
 ) -> float:
-    pass
+    """
+       Calculate enthalpy of beer in tank at a specific time.
+
+       Args:
+           mass: Mass of beer at time t* [kg]
+           specific_heat_capacity: Specific heat capacity of beer [J/(kg·K)]
+           temperature: Temperature of beer (T_zu) [K]
+
+       Returns:
+           float: Enthalpy H_zu [J]
+
+       Formula:
+           H_zu(t*) = m(t*) * c * T_zu
+       """
+    return mass * specific_heat_capacity * temperature
 
 
 def store_plot_data(

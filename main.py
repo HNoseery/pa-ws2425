@@ -194,6 +194,23 @@ def main():
     for key in df_data:
         print(f"- {key}: {len(df_data[key])} samples")
 
+        # ================== Data Archiving - 5a ==================
+        # 1. Declare archive path and group
+    h5_path = "/Users/HNoseery/Desktop/pa-ws2425/project/results/data_Gdb_plot_WS2425.h5"
+    group_path = f"/brewing_{brewing}/tank_{tank_id}"
+
+    # 2. Define metadata dictionary
+    metadata = {
+        "legend_title": f"Brewing Process {brewing} - Tank {tank_id}",
+        "x_label": "Time",
+        "x_unit": "seconds",
+        "y_label": "Inner Energy",
+        "y_unit": "Joules",
+        "experiment_date": "2025-02-17",
+        "author": "HNoseery",
+        "temperature_unit": "Celsius",
+        "filter_sizes": str(filter_sizes)
+    }
 
 
 

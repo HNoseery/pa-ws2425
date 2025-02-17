@@ -77,6 +77,12 @@ def main():
 
     specific_heat_capacity_tank = read_metadata(file_path,tank_group_path,"specific_heat_capacity_tank")
 
+
+    power_heater = read_metadata(file_path,tank_group_path,"power_heater")
+
+
+    efficiency_heater = read_metadata(file_path,tank_group_path,"efficiency_heater")
+
     df_data = {}
 
 
@@ -84,6 +90,10 @@ def main():
     from project.functions import remove_negatives
     from project.functions import interpolate_nan_data
     from project.functions import filter_data
+    from project.functions import calc_mass
+    from project.functions import calc_enthalpy
+    from project.functions import calc_heater_heat_flux
+    from project.functions import calc_convective_heat_flow
 
     processed_data = {}
     df_data = {}
@@ -124,7 +134,57 @@ def main():
                 data=interpolated_level,
                 window_size=k
             )
+        temp_key = f"temperature_k_{k}"
+        level_key = f"level_k_{k}"
+        filtered_temp = processed_data[temp_key]
+        filtered_level = processed_data[level_key]
 
+        # 1. Calculate mass over time
+        mass_data = calc_mass(
+            level_data=filtered_level,
+            tank_footprint=footprint_tank,
+            density=density_beer
+        )
+
+        # 2. Calculate initial energy E0
+        E0 = calc_enthalpy(
+            mass=mass_tank,
+            specific_heat_capacity=specific_heat_capacity_tank,
+            temperature=T_env
+        )
+
+        # 3. Initialize energy storage
+        inner_energy = []
+
+        # 4. Get metadata parameters
+        Q_zu = calc_heater_heat_flux(
+            P_heater=power_heater,  # Replace with your actual variable name
+            eta_heater=efficiency_heater
+        )
+
+        # 5. Time iteration loop
+        for i, (current_time, current_temp) in enumerate(zip(df_data['time'], filtered_temp)):
+            # Calculate convective heat loss
+            Q_ab = calc_convective_heat_flow(
+                k_tank=heat_transfer_coeff_tank,
+                area_tank=surface_area_tank,
+                t_total=current_temp,
+                t_env=T_env
+            )
+
+            # Calculate current enthalpy
+            H_zu = calc_enthalpy(
+                mass = mass_data[i],
+                specific_heat_capacity=specific_heat_capacity_beer,
+                temperature=current_temp
+            )
+
+            # Calculate and store inner energy
+            current_E = Q_zu - Q_ab + H_zu + E0
+            inner_energy.append(current_E)
+
+        # 6. Store results
+        df_data[f"inner_energy_k_{k}"] = np.array(inner_energy)
 
     print("\nProcessed Data Structure:")
     for key in processed_data:

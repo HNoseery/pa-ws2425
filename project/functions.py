@@ -355,7 +355,32 @@ def calc_enthalpy(
 def store_plot_data(
     data: dict[str, NDArray], file_path: str, group_path: str, metadata: dict[str, Any]
 ) -> None:
-    pass
+    """
+       Store processed data and metadata in an HDF5 file using pandas.HDFStore.
+
+       Args:
+           data: Dictionary of data arrays to store (keys = column names)
+           file_path: Path to the output HDF5 file
+           group_path: Group path within the HDF5 file
+           metadata: Dictionary of metadata attributes for the group
+       """
+    # Convert data dictionary to DataFrame
+    df = pd.DataFrame(data)
+
+    # Create HDF5 file and store data with metadata
+    with pd.HDFStore(file_path, mode='a') as store:
+        # Store DataFrame (overwrite if exists)
+        store.put(
+            key=group_path,
+            value=df,
+            format='table',  # Required for attributes
+            append=False
+        )
+
+        # Add metadata as group attributes
+        storer = store.get_storer(group_path)
+        for key, value in metadata.items():
+            storer.attrs[key] = value
 
 
 def read_plot_data(

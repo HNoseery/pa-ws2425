@@ -386,7 +386,35 @@ def store_plot_data(
 def read_plot_data(
     file_path: str, group_path: str
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    pass
+    from typing import Any, Tuple
+    """
+       Read archived data and metadata from HDF5 file for plotting.
+
+       Args:
+           file: Path to HDF5 file
+           group_path: Group path containing the dataset
+
+       Returns:
+           Tuple containing:
+           - pd.DataFrame: Archived data
+           - dict: Plot labels metadata (legend title, axis labels with units)
+       """
+    with pd.HDFStore(file_path, mode='r') as store:
+        # Read DataFrame
+        df = store.get(group_path)
+
+        # Read metadata attributes
+        storer = store.get_storer(group_path)
+        metadata = dict(storer.attrs)
+
+        # Construct standardized plot labels dictionary
+        plot_labels = {
+            "legend_title": metadata.get("legend_title", "Untitled"),
+            "x_label": f"{metadata.get('x_label', 'X-Axis')} [{metadata.get('x_unit', '')}]",
+            "y_label": f"{metadata.get('y_label', 'Y-Axis')} [{metadata.get('y_unit', '')}]"
+        }
+
+    return df, plot_labels
 
 
 def plot_data(data: pd.DataFrame, formats: dict[str, str]) -> Figure:

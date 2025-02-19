@@ -12,6 +12,7 @@ import pandas as pd
 from numpy.typing import NDArray
 from typing import Any
 
+
 def main():
 
     file_path = "/Users/HNoseery/Desktop/pa-ws2425/project/data/data_GdD_Datensatz_WS2425.h5"
@@ -231,6 +232,31 @@ def main():
     )
 
     print(f"\nData archived successfully to: {h5_path}")
+
+    from project.functions import read_plot_data
+    from project.functions import plot_data
+    from project.functions import publish_plot
+
+    df_plot, plot_labels = read_plot_data(
+        file_path=h5_path,
+        group_path=group_path
+    )
+
+    # 2. Generate plot
+    fig = plot_data(df_plot, plot_labels)
+
+    # 3. Publish results
+    publish_plot(
+        fig=fig,
+        source_paths=[
+            h5_path,  # Processed HDF5 file
+            "/Users/HNoseery/Desktop/pa-ws2425/project/functions.py",  # Module
+            "/Users/HNoseery/Desktop/pa-ws2425/main.py"  # Main script
+        ],
+        destination_path="./plotid"  # Output directory
+    )
+
+    print("\nPlot and files published to: ./plotid")
 
 
 

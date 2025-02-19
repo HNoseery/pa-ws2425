@@ -355,6 +355,9 @@ def calc_enthalpy(
 def store_plot_data(
     data: dict[str, NDArray], file_path: str, group_path: str, metadata: dict[str, Any]
 ) -> None:
+    import pandas as pd
+    from typing import Any, Tuple
+
     """
        Store processed data and metadata in an HDF5 file using pandas.HDFStore.
 
@@ -386,7 +389,9 @@ def store_plot_data(
 def read_plot_data(
     file_path: str, group_path: str
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
+    import pandas as pd
     from typing import Any, Tuple
+
     """
        Read archived data and metadata from HDF5 file for plotting.
 
@@ -418,7 +423,43 @@ def read_plot_data(
 
 
 def plot_data(data: pd.DataFrame, formats: dict[str, str]) -> Figure:
-    pass
+    """
+        Plot inner energy data in gigajoules over time in hours.
+
+        Args:
+            data: DataFrame containing time and inner energy data
+            formats: Dictionary with plot formatting information
+
+        Returns:
+            matplotlib.figure.Figure: The generated plot figure
+        """
+    fig = plt.figure(figsize=(12, 6))
+
+    # Convert units
+    time_hours = data['time'] / 3600  # Seconds → hours
+    x_label = f"{formats['x_label'].split(' [')[0]} [hours]"
+    y_label = f"Inner Energy [GJ]"
+
+    # Plot all energy curves
+    energy_cols = [col for col in data.columns if col.startswith('inner_energy_k_')]
+    for col in energy_cols:
+        filter_size = col.split('_')[-1]
+        plt.plot(
+            time_hours,
+            data[col] / 1e9,  # Convert J → GJ
+            label=f'Filter size {filter_size}',
+            linewidth=2
+        )
+
+    # Style plot
+    plt.xlabel(x_label, fontsize=12)
+    plt.ylabel(y_label, fontsize=12)
+    plt.title(formats['legend_title'], fontsize=14)
+    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.legend(title='Filter Sizes', title_fontsize=12)
+    plt.tight_layout()
+
+    return fig
 
 
 def publish_plot(

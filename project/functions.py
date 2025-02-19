@@ -9,6 +9,9 @@ import pandas as pd
 from plotid.publish import publish
 from plotid.tagplot import tagplot
 
+
+
+
 def read_metadata(file: str, path: str, attr_key: str) -> Any | None:
     import h5py
     import warnings
@@ -409,14 +412,16 @@ def read_plot_data(
         df = store.get(group_path)
 
         # Read metadata attributes
-        storer = store.get_storer(group_path)
-        metadata = dict(storer.attrs)
+        metadata = {}
+        if store.get_storer(group_path):
+            storer = store.get_storer(group_path)
+            metadata = {key: storer.attrs[key] for key in storer.attrs._v_attrnames}  # Fixed
 
-        # Construct standardized plot labels dictionary
+        # Build plot labels
         plot_labels = {
-            "legend_title": metadata.get("legend_title", "Untitled"),
-            "x_label": f"{metadata.get('x_label', 'X-Axis')} [{metadata.get('x_unit', '')}]",
-            "y_label": f"{metadata.get('y_label', 'Y-Axis')} [{metadata.get('y_unit', '')}]"
+            "legend_title": metadata.get("legend_title", "Brewing Process"),
+            "x_label": f"{metadata.get('x_label', 'Time')} [{metadata.get('x_unit', 's')}]",
+            "y_label": f"{metadata.get('y_label', 'Inner Energy')} [{metadata.get('y_unit', 'J')}]"
         }
 
     return df, plot_labels
@@ -465,7 +470,10 @@ def plot_data(data: pd.DataFrame, formats: dict[str, str]) -> Figure:
 def publish_plot(
     fig: Figure, source_paths: str | list[str], destination_path: str
 ) -> None:
+
+
     import os
+    from datetime import datetime
 
     """
         Save and publish a plot with institutional tagging requirements.
@@ -475,29 +483,28 @@ def publish_plot(
             source_paths: Path(s) to source data files
             destination_path: Output directory for published materials
         """
-    # Create destination directory if missing
+
     os.makedirs(destination_path, exist_ok=True)
 
-    # Tag and save plot
-    tagplot(
-        fig=fig,
-        id_method="time",
-        prefix="GdD_WS_2425_2592668_",
+    # Generate unique ID
+    current_time = datetime.now().strftime("%Y%m%d%H%M%S")
+    matrikelnummer = "YOUR_MATRIKELNUMMER"  # REPLACE THIS
+    plot_id = f"GdD_WS_2425_{matrikelnummer}_{current_time}"
+
+    # Tag the plot and get the PlotIDTransfer object from tagplot()
+    id_transfer = tagplot(  # <-- tagplot() returns PlotIDTransfer
+        figs=[fig],
+        ids=[plot_id],
+        engine="matplotlib",
         save_dir=destination_path
     )
 
-    # Ensure source_paths is a list
-    if isinstance(source_paths, str):
-        source_paths = [source_paths]
-
-    # Publish source files
-    for src_path in source_paths:
-        publish(
-            source=src_path,
-            destination=destination_path,
-            id_method="time",
-            prefix="GdD_WS_2425_123456_"  # Consistent prefix
-        )
+    # Publish the data using the PlotIDTransfer object
+    publish(
+        figs_and_ids=id_transfer,  # <-- Pass the object returned by tagplot()
+        src_datapath=source_paths,
+        dst_path=destination_path
+    )
 
 
 if __name__ == "__main__":

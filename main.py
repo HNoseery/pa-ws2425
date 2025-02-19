@@ -7,6 +7,11 @@ import project.functions as fn
 from project.functions import read_metadata
 
 
+import pandas as pd
+
+from numpy.typing import NDArray
+from typing import Any
+
 def main():
 
     file_path = "/Users/HNoseery/Desktop/pa-ws2425/project/data/data_GdD_Datensatz_WS2425.h5"
@@ -211,6 +216,21 @@ def main():
         "temperature_unit": "Celsius",
         "filter_sizes": str(filter_sizes)
     }
+
+    from project.functions import store_plot_data
+    # ================== Data Archiving ==================
+    # Call store_plot_data() with final parameters
+    output_dir = os.path.dirname(h5_path)
+    os.makedirs(output_dir, exist_ok=True)
+
+    store_plot_data(
+        data=df_data,  # Processed data dictionary
+        file_path=h5_path,  # From Aufgabe 5a
+        group_path=group_path,  # From Aufgabe 5a
+        metadata=metadata  # From Aufgabe 5a
+    )
+
+    print(f"\nData archived successfully to: {h5_path}")
 
 
 

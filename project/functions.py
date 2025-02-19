@@ -465,7 +465,39 @@ def plot_data(data: pd.DataFrame, formats: dict[str, str]) -> Figure:
 def publish_plot(
     fig: Figure, source_paths: str | list[str], destination_path: str
 ) -> None:
-    pass
+    import os
+
+    """
+        Save and publish a plot with institutional tagging requirements.
+
+        Args:
+            fig: Matplotlib figure to publish
+            source_paths: Path(s) to source data files
+            destination_path: Output directory for published materials
+        """
+    # Create destination directory if missing
+    os.makedirs(destination_path, exist_ok=True)
+
+    # Tag and save plot
+    tagplot(
+        fig=fig,
+        id_method="time",
+        prefix="GdD_WS_2425_2592668_",
+        save_dir=destination_path
+    )
+
+    # Ensure source_paths is a list
+    if isinstance(source_paths, str):
+        source_paths = [source_paths]
+
+    # Publish source files
+    for src_path in source_paths:
+        publish(
+            source=src_path,
+            destination=destination_path,
+            id_method="time",
+            prefix="GdD_WS_2425_123456_"  # Consistent prefix
+        )
 
 
 if __name__ == "__main__":

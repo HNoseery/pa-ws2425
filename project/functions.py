@@ -452,7 +452,7 @@ def plot_data(data: pd.DataFrame, formats: dict[str, str]) -> Figure:
             time_hours,
             data[col] / 1e9,  # Convert J → GJ
             label=f'Filter size {filter_size}',
-            linewidth=2
+            linewidth=1
         )
 
     # Style plot

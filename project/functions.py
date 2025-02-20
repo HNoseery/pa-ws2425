@@ -269,9 +269,8 @@ def filter_data(data: NDArray, window_size: int) -> NDArray:
     padded_data = np.pad(array=data, pad_width=pad_width, mode="edge")
     for i in range(pad_width, padded_data.size - pad_width):
         # Implementieren Sie hier den SMA!
-        n = window_size // 2
-        window = padded_data[i - n: i + n + 1]
-        sma = np.sum(window) / window_size
+        window = padded_data[i - pad_width: i + pad_width + 1]
+        sma = np.mean(window)
         output.append(sma)
     return np.array(output)
 

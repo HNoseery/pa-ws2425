@@ -488,7 +488,7 @@ def publish_plot(
 
     # Generate unique ID
     current_time = datetime.now().strftime("%Y%m%d%H%M%S")
-    matrikelnummer = "YOUR_MATRIKELNUMMER"  # REPLACE THIS
+    matrikelnummer = 2592668
     plot_id = f"GdD_WS_2425_{matrikelnummer}_{current_time}"
 
     # Tag the plot and get the PlotIDTransfer object from tagplot()
